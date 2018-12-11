@@ -1,8 +1,12 @@
 package org.izv.aad.proyecto.Activities;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.print.PrintManager;
 import android.support.annotation.Nullable;
+import android.support.constraint.ConstraintLayout;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -18,6 +22,7 @@ import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
+import org.izv.aad.proyecto.Adapters.MyPrintDocumentAdapter;
 import org.izv.aad.proyecto.DataBase.Manager;
 import org.izv.aad.proyecto.FireBase.FirebaseCustom;
 import org.izv.aad.proyecto.Objects.Author;
@@ -27,12 +32,13 @@ import org.izv.aad.proyecto.R;
 public class ShowBook extends AppCompatActivity{
 
     private TextView show_author, show_dateStart, show_dateFinish, show_state;
-    private TextView show_status;
+    private TextView show_status, tvDateFinish;
     private ImageView show_logo, show_favStar;
     private Book book;
     private Author author;
     private RatingBar show_rating;
     private String status_book, dateStart, dateEnd;
+    private ConstraintLayout constraintDates;
 
     private Manager manager;
 
@@ -78,6 +84,8 @@ public class ShowBook extends AppCompatActivity{
 
     private void init(){
         getIntentBook();
+        constraintDates = findViewById(R.id.constraintDates);
+        tvDateFinish = findViewById(R.id.tvDateFinish);
         show_author = findViewById(R.id.show_author);
         show_dateStart = findViewById(R.id.show_dateStart);
         show_dateFinish = findViewById(R.id.show_dateFinish);
@@ -88,6 +96,7 @@ public class ShowBook extends AppCompatActivity{
         show_favStar = findViewById(R.id.show_favStar);
         notEditableRatingBar();
         setValues();
+        initFloatingButton();
     }
 
     private void getIntentBook(){
@@ -109,6 +118,16 @@ public class ShowBook extends AppCompatActivity{
         show_state.setText(status_book);
         show_status.setText(book.getResume());
         show_rating.setRating(book.getAssessment());
+
+        if(dateStart.equals("")){
+            constraintDates.setVisibility(View.GONE);
+        }else{
+            if(dateEnd.equals("")){
+                show_dateFinish.setVisibility(View.GONE);
+                tvDateFinish.setVisibility(View.GONE);
+            }
+        }
+
         if(book.isFavorite()){
             show_favStar.setVisibility(View.VISIBLE);
         }
@@ -169,5 +188,26 @@ public class ShowBook extends AppCompatActivity{
     public boolean onSupportNavigateUp(){
         finish();
         return true;
+    }
+
+    private void initFloatingButton() {
+        FloatingActionButton fab = findViewById(R.id.fabImprimir);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                doPrint();
+            }
+        });
+    }
+
+    private void doPrint() {
+        PrintManager printManager = (PrintManager) this
+                .getSystemService(Context.PRINT_SERVICE);
+
+        String jobName = this.getString(R.string.app_name) +
+                " Document";
+
+        printManager.print(jobName, new MyPrintDocumentAdapter(this,show_author,dateStart,dateEnd,show_state,show_status,book),
+                null);
     }
 }

@@ -387,7 +387,7 @@ public class ManageBooks extends AppCompatActivity {
         } else {
             Book book = new Book(0, authorSelected.getId(), "", title, photo, resume, rating, favorite, fechIni, fechFin);
             Intent intent = new Intent();
-            intent.putExtra("createBook", book);
+            intent.putExtra("book", book);
             setResult(RESULT_OK, intent);
             finish();
         }

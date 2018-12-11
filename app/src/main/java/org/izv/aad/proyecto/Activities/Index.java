@@ -405,7 +405,7 @@ public class Index extends AppCompatActivity implements NavigationView.OnNavigat
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         if(resultCode == RESULT_OK && requestCode == CODE_RESULT_MANAGEBOOKS_CREATE){
-            Book book = data.getParcelableExtra("createBook");
+            Book book = data.getParcelableExtra("book");
             books.add(book);
             saveBooks(book, false);
             if(adapterIndex == null) {
